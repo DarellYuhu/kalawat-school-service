@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AcademicYear {
+  id       Int      @id @default(autoincrement())
+  year     String
+  semester Semester
+  Class    Class[]
+
+  @@unique([year, semester])
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  username String     @unique
+  password String
+  role     UserRole[]
+
+  Student Student?
+  Teacher Teacher?
+}
+
+model Student {
+  id            String          @id @default(uuid())
+  fullName      String          @unique
+  pob           String
+  dob           DateTime
+  gender        Gender
+  address       String
+  religion      String
+  Parent        Parent?
+  Document      Document?
+  Class_Student Class_Student[]
+  User          User            @relation(fields: [userId], references: [id])
+  userId        Int             @unique
+}
+
+model Teacher {
+  id            String     @id @default(uuid())
+  fullName      String     @unique
+  pob           String
+  dob           DateTime
+  gender        Gender
+  address       String
+  religion      String
+  concentration String
+  Schedule      Schedule[]
+  User          User       @relation(fields: [userId], references: [id])
+  userId        Int        @unique
+}
+
+model Parent {
+  fatherName       String?
+  motherName       String?
+  guardianName     String?
+  fatherPhoneNum   String?
+  motherPhoneNum   String?
+  guardianPhoneNum String?
+  address          String
+
+  Student   Student @relation(fields: [studentId], references: [id])
+  studentId String  @unique
+}
+
+model Document {
+  graduationCert String
+  birthCert      String
+  familyCert     String
+  fatherId       String?
+  motherId       String?
+  pkh            String?
+  foto           String
+
+  Student   Student @relation(fields: [studentId], references: [id])
+  studentId String  @unique
+}
+
+model Subject {
+  id       String     @id @default(uuid())
+  name     String
+  Schedule Schedule[]
+}
+
+model Class {
+  id             Int             @id @default(autoincrement())
+  grade          Int             @db.SmallInt
+  parallel       String          @db.Char(1)
+  AcademicYear   AcademicYear    @relation(fields: [academicYearId], references: [id])
+  academicYearId Int
+  Class_Student  Class_Student[]
+  Schedule       Schedule[]
+}
+
+model Class_Student {
+  Class     Class   @relation(fields: [classId], references: [id])
+  classId   Int
+  Student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+
+  @@unique([classId, studentId])
+}
+
+model Schedule {
+  id           Int            @id @default(autoincrement())
+  Subject      Subject        @relation(fields: [subjectId], references: [id])
+  subjectId    String
+  Teacher      Teacher        @relation(fields: [teacherId], references: [id])
+  teacherId    String
+  Class        Class          @relation(fields: [classId], references: [id])
+  classId      Int
+  ScheduleDate ScheduleDate[]
+}
+
+model ScheduleDate {
+  id         Int      @id @default(autoincrement())
+  Schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  date       Date
+  time       DateTime @db.Time()
+}
+
+enum Date {
+  SENIN
+  SELASA
+  RABU
+  KAMIS
+  JUMAT
+  SABTU
+}
+
+enum UserRole {
+  MURID
+  GURU
+  KEPALA_SEKOLAH
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Semester {
+  GANJIL
+  GENAP
+}

@@ -1,0 +1,24 @@
+{
+  "name": "kalawat-school-service",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "pretest": "bun docker:up:test && sleep 1 && bun --env-file=.env.test run db:deploy:test",
+    "test": "bun test",
+    "posttest": "bun docker:down:test",
+    "docker:up:test": "docker compose up -d db-test",
+    "docker:down:test": "docker compose down db-test",
+    "docker:up:dev": "docker compose up -d db-dev",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:deploy:test": "bunx prisma migrate deploy"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.2.2",
+    "@prisma/client": "^5.15.0",
+    "hono": "^4.4.6",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^5.15.0"
+  }
+}
