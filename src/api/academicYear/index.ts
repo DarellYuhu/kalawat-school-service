@@ -13,11 +13,14 @@ academicYear.post(
     const { semester, year } = c.req.valid("json");
     try {
       const data = await academicYearService.create(semester as Semester, year);
-      return c.json({
-        status: "success",
-        message: "Academic year created successfully",
-        data,
-      });
+      return c.json(
+        {
+          status: "success",
+          message: "Academic year created successfully",
+          data,
+        },
+        201
+      );
     } catch (error) {
       console.log(error);
     }

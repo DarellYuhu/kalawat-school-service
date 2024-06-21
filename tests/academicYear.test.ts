@@ -30,13 +30,13 @@ describe("POST /academic-year", () => {
     expect(result).toHaveProperty("success", false);
   });
 
-  it("should return 200", async () => {
+  it("should return 201", async () => {
     const payload = { semester: "GENAP", year: "2023/2024" };
     const res = await app.request("/academic-year", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
     });
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
   });
 });

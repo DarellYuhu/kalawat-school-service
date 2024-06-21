@@ -101,6 +101,8 @@ model Class {
   academicYearId Int
   Class_Student  Class_Student[]
   Schedule       Schedule[]
+
+  @@unique([grade, parallel, academicYearId])
 }
 
 model Class_Student {

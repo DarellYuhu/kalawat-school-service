@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { academicYear } from "./api";
+import { _class, academicYear } from "./api";
 
 const app = new Hono();
 
@@ -9,6 +9,7 @@ const app = new Hono();
 // });
 
 app.route("/academic-year", academicYear);
+app.route("/class", _class);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
