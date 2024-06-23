@@ -6,19 +6,15 @@ import { classData } from "./datas";
 let academicYearId: number;
 let Class_Student: { studentId: string }[];
 let classId: number;
-let newClassId: number;
-let studentIds: string[];
 
 beforeAll(async () => {
   try {
-    const { academicYear, students, _class, _newClass } = await seedDatabase();
+    const { academicYear, students, _class } = await seedDatabase();
     academicYearId = academicYear.id;
     Class_Student = students.map((item) => ({ studentId: item.id }));
     classId = _class.id;
-    newClassId = _newClass.id;
-    studentIds = students.map((item) => item.id);
   } catch (error) {
-    console.log(error);
+    console.log("ERR_CLASS_STUDENT_PRETEST: ", error);
   }
 });
 
@@ -26,7 +22,7 @@ afterAll(async () => {
   try {
     await clearDatabase();
   } catch (error) {
-    console.log(error);
+    console.log("ERR_CLASS_STUDENT_POSTTEST: ", error);
   }
 });
 
@@ -66,18 +62,5 @@ describe("DELETE /class/:id", () => {
   it("should return 200", async () => {
     const res = await app.request(`/class/${classId}`, { method: "DELETE" });
     expect(res.status).toBe(200);
-  });
-});
-
-describe("POST /class/:id", () => {
-  it("should return 200", async () => {
-    const res = await app.request(`/class/${newClassId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(studentIds.slice(4)),
-    });
-    const data = await res.json();
-    expect(res.status).toBe(201);
-    expect(data.data).toBeArray();
   });
 });

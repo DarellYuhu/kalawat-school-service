@@ -14,9 +14,4 @@ const remove = z.object({
   id: z.preprocess((val) => Number(val), z.number()),
 });
 
-const addStudentPayload = z.array(z.string()).min(1);
-const addStudentParam = z.object({
-  classId: z.preprocess((val) => Number(val), z.number()),
-});
-
-export default { create, remove, addStudentParam, addStudentPayload };
+export default { create, remove };

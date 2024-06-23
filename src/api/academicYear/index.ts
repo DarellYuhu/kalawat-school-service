@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import academicYearSchema from "./academicYear.schema";
 import academicYearService from "./academicYear.service";
 import { Semester } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { HTTPException } from "hono/http-exception";
 
 const academicYear = new Hono();
 
@@ -10,8 +12,8 @@ academicYear.post(
   "/",
   zValidator("json", academicYearSchema.create),
   async (c) => {
-    const { semester, year } = c.req.valid("json");
     try {
+      const { semester, year } = c.req.valid("json");
       const data = await academicYearService.create(semester as Semester, year);
       return c.json(
         {
@@ -22,7 +24,14 @@ academicYear.post(
         201
       );
     } catch (error) {
-      console.log(error);
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new HTTPException(409, {
+            message: "Semester and year already exist",
+          });
+        }
+      }
+      throw error;
     }
   }
 );

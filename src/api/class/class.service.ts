@@ -30,11 +30,4 @@ const remove = async (id: number) => {
   ]);
 };
 
-const addStudent = async (studentIds: string[], classId: number) => {
-  return await prisma.class_Student.createManyAndReturn({
-    data: studentIds.map((item) => ({ classId, studentId: item })),
-    skipDuplicates: true,
-  });
-};
-
-export default { create, remove, addStudent };
+export default { create, remove };

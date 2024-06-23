@@ -39,4 +39,14 @@ describe("POST /academic-year", () => {
     });
     expect(res.status).toBe(201);
   });
+
+  it("should return 409 when same data already exist", async () => {
+    const payload = { semester: "GENAP", year: "2023/2024" };
+    const res = await app.request("/academic-year", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+    });
+    expect(res.status).toBe(409);
+  });
 });

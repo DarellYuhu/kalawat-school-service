@@ -47,17 +47,5 @@ export default async function seedDatabase() {
     },
   });
 
-  const _newClass = await prisma.class.create({
-    data: {
-      grade: 7,
-      parallel: "B",
-      academicYearId: academicYear.id,
-      Class_Student: {
-        createMany: {
-          data: students.slice(0, 3).map((item) => ({ studentId: item.id })),
-        },
-      },
-    },
-  });
-  return { academicYear, students, _class, _newClass };
+  return { academicYear, students, _class };
 }
