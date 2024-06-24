@@ -6,4 +6,8 @@ const create = z.object({
   year: z.string().regex(/^\d{4}\/\d{4}$/, "Invalid year format"),
 });
 
-export default { create };
+const removeParam = z.object({
+  id: z.preprocess((val) => Number(val), z.number()),
+});
+
+export default { create, removeParam };

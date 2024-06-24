@@ -10,6 +10,27 @@ const create = async (semester: Semester, year: string) => {
   });
 };
 
-export default {
-  create,
+const remove = async (id: number) => {
+  const classStudent = prisma.class_Student.deleteMany({
+    where: {
+      Class: {
+        academicYearId: id,
+      },
+    },
+  });
+  const classes = prisma.class.deleteMany({
+    where: { academicYearId: id },
+  });
+  const academicYear = prisma.academicYear.delete({
+    where: { id },
+  });
+
+  const { "2": result } = await prisma.$transaction([
+    classStudent,
+    classes,
+    academicYear,
+  ]);
+  return result;
 };
+
+export default { create, remove };

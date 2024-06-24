@@ -15,10 +15,13 @@ app.route("/class", classStudent);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
-    return c.json({ status: "error", message: err.message }, err.status);
+    return c.json(
+      { status: "error", message: err.message, error: err.cause },
+      err.status
+    );
   }
   console.log(err);
-  return c.json({ status: "error", message: err.message }, 500);
+  return c.json({ status: "error", message: err.message, error: err }, 500);
 });
 
 export default app;

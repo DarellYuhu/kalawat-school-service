@@ -36,4 +36,30 @@ academicYear.post(
   }
 );
 
+academicYear.delete(
+  "/:id",
+  zValidator("param", academicYearSchema.removeParam),
+  async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const data = await academicYearService.remove(id);
+      return c.json({
+        status: "success",
+        message: "Academic year deleted successfully",
+        data,
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          throw new HTTPException(404, {
+            message: "Record doesn't exist",
+            cause: error,
+          });
+        }
+      }
+      throw error;
+    }
+  }
+);
+
 export default academicYear;

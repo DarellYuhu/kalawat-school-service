@@ -32,7 +32,6 @@ classStudent.delete(
     const payload = c.req.valid("json");
     const { classId } = c.req.valid("param");
     const data = await classStudentService.removeStudent(payload, classId);
-    console.log(data);
     return c.json(
       {
         status: "success",

@@ -43,7 +43,7 @@ describe("POST /class", () => {
   it("should return 201", async () => {
     const payload = {
       grade: 7,
-      parallel: "A",
+      parallel: "B",
       academicYearId,
       Class_Student,
     };
