@@ -1,9 +1,8 @@
 import { beforeAll, afterAll, expect, test, describe, it } from "bun:test";
 import app from "../src/app";
 import { clearDatabase, seedDatabase } from "./helpers";
-import { AcademicYear } from "@prisma/client";
+import { AcademicYear, Prisma } from "@prisma/client";
 import { ZodError } from "zod";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 let academicYearId: number;
 
@@ -63,7 +62,8 @@ describe("POST /academic-year", () => {
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
     });
-    const data: TResponse<PrismaClientKnownRequestError> = await res.json();
+    const data: TResponse<Prisma.PrismaClientKnownRequestError> =
+      await res.json();
     expect(res.status).toBe(409);
     expect(data.error?.code).toBe("P2002");
   });
@@ -84,7 +84,8 @@ describe("DELETE /academic-year/:id", () => {
     const res = await app.request(`/academic-year/${academicYearId}123`, {
       method: "DELETE",
     });
-    const data: TResponse<PrismaClientKnownRequestError> = await res.json();
+    const data: TResponse<Prisma.PrismaClientKnownRequestError> =
+      await res.json();
     expect(res.status).toBe(404);
     expect(data.error?.code).toBe("P2025");
   });

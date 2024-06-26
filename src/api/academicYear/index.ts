@@ -2,8 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import academicYearSchema from "./academicYear.schema";
 import academicYearService from "./academicYear.service";
-import { Semester } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Prisma, Semester } from "@prisma/client";
 import { HTTPException } from "hono/http-exception";
 
 const academicYear = new Hono();
@@ -31,7 +30,7 @@ academicYear.post(
         201
       );
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
           throw new HTTPException(409, {
             message: "Semester and year already exist",
@@ -64,7 +63,7 @@ academicYear.delete(
         data,
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2025") {
           throw new HTTPException(404, {
             message: "Record doesn't exist",

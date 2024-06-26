@@ -16,18 +16,19 @@ const create = async (
 };
 
 const remove = async (id: number) => {
-  await prisma.$transaction([
+  const { "1": result } = await prisma.$transaction([
     prisma.class_Student.deleteMany({
       where: {
         classId: id,
       },
     }),
-    prisma.class.deleteMany({
+    prisma.class.delete({
       where: {
         id,
       },
     }),
   ]);
+  return result;
 };
 
 export default { create, remove };

@@ -20,7 +20,7 @@ app.onError((err, c) => {
       err.status
     );
   }
-  console.log(err);
+  console.log("INTERNAL_SERVER_ERROR", err);
   return c.json({ status: "error", message: err.message, error: err }, 500);
 });
 
