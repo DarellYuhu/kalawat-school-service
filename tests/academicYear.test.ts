@@ -3,6 +3,7 @@ import app from "../src/app";
 import { clearDatabase, seedDatabase } from "./helpers";
 import { AcademicYear } from "@prisma/client";
 import { ZodError } from "zod";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 let academicYearId: number;
 
@@ -31,36 +32,40 @@ describe("POST /academic-year", () => {
     { case: "false year input", semester: "GENAP", year: "2023/20" },
     { case: "no data" },
   ];
-  test.each(condition)("should return 400 when $case", async (data) => {
+  test.each(condition)("should fail when $case (400)", async (data) => {
     const { case: string, ...payload } = data;
     const res = await app.request("/academic-year", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
     });
-    const result = await res.json();
+    const result: TResponse<ZodError> = await res.json();
     expect(res.status).toBe(400);
-    expect(result).toHaveProperty("success", false);
+    expect(result.error?.issues).toBeArray();
   });
 
-  it("should return 201", async () => {
+  it("should create academic year (201)", async () => {
     const payload = { semester: "GENAP", year: "2024/2025" };
     const res = await app.request("/academic-year", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
     });
+    const data: TResponse<AcademicYear> = await res.json();
     expect(res.status).toBe(201);
+    expect(data.data?.id).toBeNumber();
   });
 
-  it("should return 409 when same data already exist", async () => {
+  it("should fail when academic year already exist (409)", async () => {
     const payload = { semester: "GENAP", year: "2024/2025" };
     const res = await app.request("/academic-year", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
     });
+    const data: TResponse<PrismaClientKnownRequestError> = await res.json();
     expect(res.status).toBe(409);
+    expect(data.error?.code).toBe("P2002");
   });
 });
 
@@ -72,16 +77,19 @@ describe("DELETE /academic-year/:id", () => {
     const data: TResponse<ZodError> = await res.json();
     expect(res.status).toBe(400);
     expect(data.error).toHaveProperty("name", "ZodError");
+    expect(data).toHaveProperty("message");
   });
 
   it("should fail when academic year didn't exist (404)", async () => {
     const res = await app.request(`/academic-year/${academicYearId}123`, {
       method: "DELETE",
     });
+    const data: TResponse<PrismaClientKnownRequestError> = await res.json();
     expect(res.status).toBe(404);
+    expect(data.error?.code).toBe("P2025");
   });
 
-  it("should return 200", async () => {
+  it("should delete academic year successfully (200)", async () => {
     const res = await app.request(`/academic-year/${academicYearId}`, {
       method: "DELETE",
     });

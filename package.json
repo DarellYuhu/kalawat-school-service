@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "debug": "bun run --inspect src/index.ts",
-    "pretest": "bun install && bun docker:up:test && bun docker:healthcheck && bun --env-file=.env.test run db:deploy:test",
+    "pretest": "bun install && bun docker:up:test && sleep 2 && bun --env-file=.env.test run db:deploy:test",
     "test": "bun --env-file=.env.test test",
     "posttest": "bun docker:down:test",
     "docker:healthcheck": "sh ./wait-for-it.sh -h localhost -p 5434",

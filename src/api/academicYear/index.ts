@@ -10,7 +10,14 @@ const academicYear = new Hono();
 
 academicYear.post(
   "/",
-  zValidator("json", academicYearSchema.create),
+  zValidator("json", academicYearSchema.create, (res, c) => {
+    if (!res.success) {
+      throw new HTTPException(400, {
+        message: "Please provide valid data",
+        cause: res.error,
+      });
+    }
+  }),
   async (c) => {
     try {
       const { semester, year } = c.req.valid("json");
@@ -28,6 +35,7 @@ academicYear.post(
         if (error.code === "P2002") {
           throw new HTTPException(409, {
             message: "Semester and year already exist",
+            cause: error,
           });
         }
       }
@@ -38,7 +46,14 @@ academicYear.post(
 
 academicYear.delete(
   "/:id",
-  zValidator("param", academicYearSchema.removeParam),
+  zValidator("param", academicYearSchema.removeParam, (res, c) => {
+    if (!res.success) {
+      throw new HTTPException(400, {
+        message: "Please provide valid data",
+        cause: res.error,
+      });
+    }
+  }),
   async (c) => {
     try {
       const { id } = c.req.valid("param");
